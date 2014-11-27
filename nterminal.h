@@ -30,8 +30,13 @@ public:
     Simbolos first() override;
     Simbolos follow() override;
 
+    bool derivaEpsilonDiretamente();
+
     bool firstContemEpsilon(Simbolos s);
     void removerEpsilon(Simbolos s);
+
+    static bool somenteTerminais(FormaSentencial fs);
+    static bool somenteNTerminais(FormaSentencial fs);
 };
 
 #endif // NTERMINAL_H

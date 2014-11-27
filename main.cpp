@@ -77,4 +77,62 @@ int main(int argc, char *argv[])
         else
             cout << "Eliminar inúteis falhou!" << endl;
 
+        s =
+                "S -> A C\n"
+                "A -> E F B\n"
+                "B -> a B | &\n"
+                "C -> b A C D | D\n"
+                "D -> e D | &\n"
+                "E -> c D | &\n"
+                "F -> d F | &";
+        g = l.ler(s);
+
+        s = "S -> B A a | b\n"
+            "B -> a a | & | A\n"
+            "A -> S b b | B";
+        g = l.ler(s);
+        vector<bool> testeB = {false, true, true};
+        int i = 0;
+        for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
+            NTerminal * s = *A;
+
+            if(g.derivaEpsilon(s) == testeB.at(i))
+                cout << "Deriva epsilon ok!" << endl;
+            else
+                cout << "Deriva epsilon fail!" << endl;
+            i++;
+        }
+
+        s = "S -> B A a | b | B A\n"
+            "B -> a a | & | A | D\n"
+            "A -> S b b | B\n"
+            "D -> S A | S a";
+        g = l.ler(s);
+        vector<bool> testeC = {true, true, true, true};
+        i = 0;
+        for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
+            NTerminal * s = *A;
+
+            if(g.derivaEpsilon(s) == testeC.at(i))
+                cout << "Deriva epsilon ok!" << endl;
+            else
+                cout << "Deriva epsilon fail!" << endl;
+            i++;
+        }
+
+        s = "S -> B A a | b | A B\n"
+            "B -> a a | & | A\n"
+            "A -> S b b | B";
+        g = l.ler(s);
+        vector<bool> testeD = {true, true, true};
+        i = 0;
+        for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
+            NTerminal * s = *A;
+
+            if(g.derivaEpsilon(s) == testeD.at(i))
+                cout << "Deriva epsilon ok!" << endl;
+            else
+                cout << "Deriva epsilon fail!" << endl;
+            i++;
+        }
 }

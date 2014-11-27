@@ -16,6 +16,7 @@ class Gramatica
 {
     NTerminal * _inicial;
     set<NTerminal*> _NTerminais;
+    Simbolos _Ne;
 
 public:
     Gramatica();
@@ -34,8 +35,12 @@ public:
     Simbolos follow();
 
     Simbolo * contem(set<NTerminal*> simbolos, NTerminal s);
-    bool somenteTerminais(FormaSentencial fs);
+
     bool fertil(FormaSentencial fs, set<NTerminal*> ferteis);
+
+    void calculaNe();
+    Simbolos * Ne();
+    bool derivaEpsilon(NTerminal * nt);
 
     string print();
 };

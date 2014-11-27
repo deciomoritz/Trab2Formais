@@ -55,6 +55,7 @@ Gramatica LeitorGramatica::ler(string s) {
             }
         }
     }
+    g.calculaNe();
     return g;
 }
 

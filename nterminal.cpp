@@ -64,3 +64,44 @@ void NTerminal::removerEpsilon(Simbolos s){
             s.erase(A);
     }
 }
+
+bool NTerminal::derivaEpsilonDiretamente(){
+
+    for(auto A = _producoes.begin(); A != _producoes.end();A++){
+        FormaSentencial fs = *A;
+
+        if(fs.front()->nome().compare(string("&")) == 0)
+            return true;
+
+        if(NTerminal::somenteNTerminais(fs)){
+            for (int i = 0; i < fs.size(); ++i) {
+                Simbolo * s = fs.at(i);
+                if(s->nome().compare(string("&")) == 0)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool NTerminal::somenteTerminais(FormaSentencial fs){
+    for (int i = 0; i < fs.size(); ++i) {
+        Simbolo * s = fs.at(i);
+        string tipo = typeid(*s).name();
+        tipo.erase(tipo.begin());
+        if(tipo.compare("NTerminal") == 0)
+            return false;
+    }
+    return true;
+}
+
+bool NTerminal::somenteNTerminais(FormaSentencial fs){
+    for (int i = 0; i < fs.size(); ++i) {
+        Simbolo * s = fs.at(i);
+        string tipo = typeid(*s).name();
+        tipo.erase(tipo.begin());
+        if(tipo.compare("Terminal") == 0)
+            return false;
+    }
+    return true;
+}
