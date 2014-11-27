@@ -16,7 +16,6 @@ using std::set;
 typedef vector<Simbolo*> FormaSentencial;
 
 class NTerminal : public Simbolo{
-    string _nome;
     set<FormaSentencial> _producoes;
 
     using Simbolo::first;

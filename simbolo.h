@@ -13,10 +13,10 @@ typedef set<Simbolo*> Simbolos;
 
 class Simbolo
 {
-    string _nome;
 
 protected:
     Simbolos _first;
+    string _nome;
 
 public:
     Simbolo();

@@ -8,8 +8,6 @@ using namespace::std;
 
 class Terminal : public Simbolo{
 
-    string _nome;
-
 public:
     Terminal();
     Terminal(string nome);

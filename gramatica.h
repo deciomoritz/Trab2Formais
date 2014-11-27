@@ -14,7 +14,7 @@ using std::set;
 
 class Gramatica
 {
-    NTerminal _inicial;
+    NTerminal * _inicial;
     set<NTerminal*> _NTerminais;
 
 public:
@@ -22,8 +22,19 @@ public:
 
     void addNTerminal(NTerminal * nt);
 
+    void eliminarInferteis();
+    void eliminarInalcancaveis();
+
+    void setInicial(NTerminal * inicial);
+
+    set<NTerminal*> * nTerminais();
+
     Simbolos first();
     Simbolos follow();
+
+    Simbolo * contem(set<NTerminal*> simbolos, NTerminal s);
+
+    string print();
 };
 
 #endif // GRAMATICA_H
