@@ -24,6 +24,7 @@ public:
 
     void eliminarInferteis();
     void eliminarInalcancaveis();
+    void eliminarInuteis();
 
     void setInicial(NTerminal * inicial);
 
@@ -33,6 +34,8 @@ public:
     Simbolos follow();
 
     Simbolo * contem(set<NTerminal*> simbolos, NTerminal s);
+    bool somenteTerminais(FormaSentencial fs);
+    bool fertil(FormaSentencial fs, set<NTerminal*> ferteis);
 
     string print();
 };

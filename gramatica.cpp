@@ -9,7 +9,58 @@ void Gramatica::addNTerminal(NTerminal * nt){
 }
 
 void Gramatica::eliminarInferteis(){
+    set<NTerminal*> ferteis;
+    set<NTerminal*> novoFerteis;
 
+    for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
+        NTerminal * nt = *A;
+
+        bool fertil = false;
+        for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
+            FormaSentencial fs = *B;
+
+            if(somenteTerminais(fs))
+                fertil = true;
+        }
+        if(fertil)
+            ferteis.insert(nt);
+    }
+
+    do{
+        novoFerteis = ferteis;
+        for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
+            NTerminal * nt = *A;
+
+            bool fert = false;
+            for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
+                FormaSentencial fs = *B;
+
+                if(fertil(fs, ferteis))
+                    fert = true;
+            }
+            if(fert)
+                ferteis.insert(nt);
+        }
+    }while(ferteis.size() != novoFerteis.size());
+
+    for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
+        NTerminal * nt = *A;
+
+        for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
+            FormaSentencial fs = *B;
+
+            if(!fertil(fs, ferteis))
+                nt->producoes()->erase(B);
+        }
+    }
+
+    _NTerminais.clear();
+    _NTerminais.insert(ferteis.begin(),ferteis.end());
+}
+
+void Gramatica::eliminarInuteis(){
+    this->eliminarInalcancaveis();
+    this->eliminarInferteis();
 }
 
 void Gramatica::eliminarInalcancaveis(){
@@ -43,14 +94,17 @@ string Gramatica::print(){
     for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
         NTerminal * nt = *A;
 
-        saida += nt->nome() + " -> ";
+        if(nt->nome().compare(_inicial->nome()) == 0)
+            saida += nt->nome()+"(inicial)" + " -> ";
+        else
+            saida += nt->nome() + " -> ";
         for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
             FormaSentencial fs = *B;
 
             for (int i = 0; i < fs.size(); ++i)
-                saida += fs.at(i)->nome();
+                saida += fs.at(i)->nome() + " ";
 
-            saida += " | ";
+            saida += "| ";
         }
         saida.pop_back();
         saida.pop_back();
@@ -74,4 +128,42 @@ void Gramatica::setInicial(NTerminal * inicial){
 
 set<NTerminal*> * Gramatica::nTerminais(){
     return &_NTerminais;
+}
+
+bool Gramatica::somenteTerminais(FormaSentencial fs){
+    for (int i = 0; i < fs.size(); ++i) {
+        Simbolo * s = fs.at(i);
+        string tipo = typeid(*s).name();
+        tipo.erase(tipo.begin());
+        if(tipo.compare("NTerminal") == 0)
+            return false;
+    }
+    return true;
+}
+
+bool Gramatica::fertil(FormaSentencial fs, set<NTerminal*> ferteis){
+    set<NTerminal*> nTerminais;
+
+    for (int i = 0; i < fs.size(); ++i) {
+        Simbolo * s = fs.at(i);
+        string tipo = typeid(*s).name();
+        tipo.erase(tipo.begin());
+        if(tipo.compare("NTerminal") == 0)
+            nTerminais.insert(s);
+    }
+    for(auto A = nTerminais.begin(); A != nTerminais.end();A++){
+        NTerminal * nt = *A;
+
+        bool contido = false;
+         for(auto B = ferteis.begin(); B != ferteis.end();B++){
+            NTerminal * fert = *B;
+
+            if(nt->nome().compare(fert->nome()) == 0)
+                contido = true;
+         }
+         if(!contido)
+             return false;
+         contido = false;
+    }
+    return true;
 }

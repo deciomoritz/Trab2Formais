@@ -9,12 +9,22 @@ Gramatica LeitorGramatica::ler(string s) {
     Gramatica g;
     vector<string>producoes = split(s, "\n");
 
+    NTerminal * inicial = new NTerminal(split(producoes.front()," ").front());
+    g.addNTerminal(inicial);
+    g.setInicial(inicial);
+
     for (int i = 0; i < producoes.size(); ++i) {
         string producao = producoes.at(i);
 
         vector<string> formasSentenciais = split(producao, " ");
 
-        NTerminal * novoNT = new NTerminal(formasSentenciais.front());
+        NTerminal * novoNT;
+        NTerminal * aux = g.contem(*g.nTerminais(), NTerminal(formasSentenciais.front()));
+        if(aux == NULL)
+            novoNT = new NTerminal(formasSentenciais.front());
+        else
+            novoNT = aux;
+
         g.addNTerminal(novoNT);
 
         FormaSentencial novaFS;
@@ -23,7 +33,15 @@ Gramatica LeitorGramatica::ler(string s) {
             string formaSentencial = formasSentenciais.at(i);
 
             if(isupper(formaSentencial.at(0))){
-                NTerminal * nt = new NTerminal(formaSentencial);
+                aux = g.contem(*g.nTerminais(), NTerminal(formaSentencial));
+
+                NTerminal * nt;
+                if(aux == NULL){
+                    nt = new NTerminal(formaSentencial);
+                    g.addNTerminal(nt);
+                }else
+                    nt = aux;
+
                 novaFS.push_back(nt);
             }else if(formaSentencial.compare(string("|")) != 0){
                 Terminal * t = new Terminal(formaSentencial);
@@ -37,7 +55,6 @@ Gramatica LeitorGramatica::ler(string s) {
             }
         }
     }
-
     return g;
 }
 
