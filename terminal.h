@@ -11,10 +11,8 @@ class Terminal : public Simbolo{
 public:
     Terminal();
     Terminal(string nome);
-
-    Simbolos first() override;
-    Simbolos follow() override;
-
+    using Simbolo::get_first;
+    void first() override;
 };
 
 #endif // TERMINAL_H

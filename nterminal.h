@@ -17,8 +17,9 @@ typedef vector<Simbolo*> FormaSentencial;
 
 class NTerminal : public Simbolo{
     set<FormaSentencial> _producoes;
-
+    Simbolos _first_NT, _follow;
     using Simbolo::first;
+
 
 public:
     NTerminal();
@@ -27,11 +28,16 @@ public:
     void addProducao(FormaSentencial f);
     set<FormaSentencial> * producoes();
 
-    Simbolos first() override;
-    Simbolos follow() override;
-
+    void first() override;
+    void follow();
+    using Simbolo::get_first;
+    //Simbolos get_first() override;
+    void first_NT(Simbolos *Ne);
+    bool ehNTerminal(Simbolo a);
+    Simbolos get_first_NT(Simbolos *Ne);
+    Simbolos get_follow();
+    
     bool derivaEpsilonDiretamente();
-
     bool firstContemEpsilon(Simbolos s);
     void removerEpsilon(Simbolos s);
 

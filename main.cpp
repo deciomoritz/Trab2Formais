@@ -86,7 +86,19 @@ int main(int argc, char *argv[])
                 "E -> c D | &\n"
                 "F -> d F | &";
         g = l.ler(s);
-
+        cout << "=============TESTE FIRST NT============="<<endl;
+       unordered_map<Simbolo*,Simbolos> teste = g.first_NT();
+       for(auto it = teste.begin(); it != teste.end(); it++){
+           Simbolo *A = it->first;
+           string name = A->nome();
+           cout<<"First NT de : " <<name<< endl;
+           for(auto it2 = (it->second).begin();it2 !=(it->second).end(); it2++){
+               Simbolo * b = *it2;
+               cout << b->nome() << " , ";
+           }
+           cout << endl;
+       }
+       cout << "===================================="<<endl;
         s = "S -> B A a | b\n"
             "B -> a a | & | A\n"
             "A -> S b b | B";

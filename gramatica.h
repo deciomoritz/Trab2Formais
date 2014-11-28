@@ -31,8 +31,9 @@ public:
 
     set<NTerminal*> * nTerminais();
 
-    Simbolos first();
-    Simbolos follow();
+    unordered_map<Simbolo*,Simbolos>  first_NT();
+    unordered_map<Simbolo*,Simbolos>  first();
+    unordered_map<Simbolo*,Simbolos> follow();
 
     Simbolo * contem(set<NTerminal*> simbolos, NTerminal s);
 

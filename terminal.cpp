@@ -8,14 +8,6 @@ Terminal::Terminal(string nome){
     _nome = nome;
 }
 
-Simbolos Terminal::first(){
-    Simbolos s;
-    return s;
+void Terminal::first(){
+    _first.insert(this);
 }
-
-Simbolos Terminal::follow(){
-    Simbolos s;
-    cout << "porra";
-    return s;
-}
-

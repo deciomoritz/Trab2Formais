@@ -196,3 +196,29 @@ bool Gramatica::fertil(FormaSentencial fs, set<NTerminal*> ferteis){
     }
     return true;
 }
+unordered_map<Simbolo*,Simbolos> Gramatica::first_NT(){
+    unordered_map<Simbolo*,Simbolos> retorno;
+    for(auto it = _NTerminais.begin(); it!= _NTerminais.end(); it++){
+        NTerminal *A = (*it);
+        retorno.insert({A, A->get_first_NT(&_Ne)});
+    }
+    return retorno;
+}
+
+unordered_map<Simbolo*,Simbolos> Gramatica::first(){
+    unordered_map<Simbolo*,Simbolos> retorno;
+    for(auto it = _NTerminais.begin(); it!= _NTerminais.end(); it++){
+        NTerminal *A = (*it);
+        retorno.insert({A, A->get_first()});
+    }
+    return retorno;
+}
+
+unordered_map<Simbolo*,Simbolos> Gramatica::follow(){
+    unordered_map<Simbolo*,Simbolos> retorno;
+    for(auto it = _NTerminais.begin(); it!= _NTerminais.end(); it++){
+        NTerminal *A = (*it);
+        retorno.insert({A, A->get_follow()});
+    }
+    return retorno;
+}

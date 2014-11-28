@@ -21,8 +21,7 @@ protected:
 public:
     Simbolo();
 
-    virtual Simbolos first();
-    virtual Simbolos follow();
+    virtual void first();
 
     bool operator== (const Simbolo &s) const{
         return _nome.compare(s._nome) == 0;

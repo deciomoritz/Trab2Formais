@@ -4,13 +4,9 @@ Simbolo::Simbolo()
 {
 }
 
-Simbolos Simbolo::first(){
-    Simbolos s;
-    return s;
-}
-
-Simbolos Simbolo::follow(){
-
+void Simbolo::first(){
+    /*Simbolos s;
+    return s;*/
 }
 
 string Simbolo::nome(){
@@ -22,3 +18,4 @@ Simbolos Simbolo::get_first(){
         this->first();
     return this->_first;
 }
+
