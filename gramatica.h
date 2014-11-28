@@ -43,6 +43,8 @@ public:
     Simbolos * Ne();
     bool derivaEpsilon(NTerminal * nt);
 
+    void calculaFirst();
+
     string print();
 };
 

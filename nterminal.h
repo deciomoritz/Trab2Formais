@@ -20,7 +20,6 @@ class NTerminal : public Simbolo{
     Simbolos _first_NT, _follow;
     using Simbolo::first;
 
-
 public:
     NTerminal();
     NTerminal(string nome);
@@ -31,15 +30,16 @@ public:
     void first() override;
     void follow();
     using Simbolo::get_first;
-    //Simbolos get_first() override;
     void first_NT(Simbolos *Ne);
-    bool ehNTerminal(Simbolo a);
+    static bool ehNTerminal(Simbolo a);
     Simbolos get_first_NT(Simbolos *Ne);
     Simbolos get_follow();
+
+    bool ehRE(Simbolos * Ne);
     
     bool derivaEpsilonDiretamente();
     bool firstContemEpsilon(Simbolos s);
-    void removerEpsilon(Simbolos s);
+    static void removerEpsilon(Simbolos * s);
 
     static bool somenteTerminais(FormaSentencial fs);
     static bool somenteNTerminais(FormaSentencial fs);

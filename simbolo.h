@@ -29,6 +29,10 @@ public:
 
     Simbolos get_first();
     string nome();
+
+    Simbolos * getFirst(){
+        return &_first;
+    }
 };
 
 #endif // SIMBOLO_H

@@ -196,6 +196,7 @@ bool Gramatica::fertil(FormaSentencial fs, set<NTerminal*> ferteis){
     }
     return true;
 }
+
 unordered_map<Simbolo*,Simbolos> Gramatica::first_NT(){
     unordered_map<Simbolo*,Simbolos> retorno;
     for(auto it = _NTerminais.begin(); it!= _NTerminais.end(); it++){
@@ -221,4 +222,71 @@ unordered_map<Simbolo*,Simbolos> Gramatica::follow(){
         retorno.insert({A, A->get_follow()});
     }
     return retorno;
+}
+
+void Gramatica::calculaFirst(){
+
+    for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
+        NTerminal * nt = *A;
+
+        for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
+            FormaSentencial fs = *B;
+
+            for(auto C = fs.begin(); C != fs.end();C++){
+                Simbolo * s = *C;
+
+                if(!NTerminal::ehNTerminal(*s)){
+                    nt->getFirst()->insert(s);
+                }else{
+                    NTerminal * nt2 = s;
+                    if(nt2->ehRE(&_Ne))
+                        break;
+                    nt2->first();
+                    nt->getFirst()->insert(nt2->getFirst()->begin(), nt2->getFirst()->end());
+                    break;
+                }
+            }
+        }
+    }
+
+    Simbolos newFirst;
+    bool houveAlteracao = false;
+
+    do{
+        for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
+            NTerminal * nt = *A;
+            newFirst.insert(nt->getFirst()->begin(), nt->getFirst()->end());
+
+            for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
+                FormaSentencial fs = *B;
+
+                bool continuar = false;
+                for(auto C = fs.begin(); C != fs.end();C++){
+                    Simbolo * s = *C;
+                    if(NTerminal::ehNTerminal(*s)){
+                        NTerminal * nt2 = s;
+                        if(!nt2->ehRE(&_Ne) && !continuar)
+                            break;
+                        continuar = false;
+                        nt->getFirst()->insert(nt2->getFirst()->begin(),nt2->getFirst()->end());
+
+                        houveAlteracao = false;
+                        if(*nt->getFirst() != newFirst)
+                            houveAlteracao = true;
+
+                        if(derivaEpsilon(nt2))
+                            continuar = true;
+                    }else
+                        break;
+                }
+            }
+        }
+    }while (houveAlteracao);
+
+    for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
+        NTerminal * nt = *A;
+
+        if(!derivaEpsilon(nt))
+            NTerminal::removerEpsilon(nt->getFirst());
+    }
 }

@@ -22,7 +22,6 @@ void NTerminal::first_NT(Simbolos *Ne){
     bool adicionou = false;
     do{
         velho = novo;
-
         for(auto it_firstNT = velho.begin(); it_firstNT != velho.end(); it_firstNT++){
             NTerminal *a = *it_firstNT;
             set<FormaSentencial> prod_a = a->_producoes;
@@ -42,11 +41,13 @@ void NTerminal::first_NT(Simbolos *Ne){
         }
 
     }while(velho != novo);
-    if(!adicionou){
+
+    if(!adicionou)
         novo.erase(this);
-    }
+
     _first_NT.insert(novo.begin(), novo.end());
 }
+
 Simbolos NTerminal::get_first_NT(Simbolos *Ne){
     if(this->_first_NT.empty())
         this->first_NT(Ne);
@@ -58,6 +59,7 @@ bool NTerminal::ehNTerminal(Simbolo a){
     char * c = nome.c_str();
     return isupper(c[0]);
 }
+
 void NTerminal::first(){
     Simbolos first;
 
@@ -74,18 +76,13 @@ void NTerminal::first(){
                 if(i != fs.size() - 1){ //se ainda não for o último símbolo da produção, não se pode concluir que & pertence a first ainda. Calcular first do próximo.
                     e_found = true; //avisa que & foi encontrado e
                     i++;//indice para calcular o first do próximo símbolo
-                    removerEpsilon(first); //& foi adicionado ao retorno por engano.
+                    removerEpsilon(&first); //& foi adicionado ao retorno por engano.
                 }
             }
         }while(e_found);
     }
-    this->_first = first;
+    this->_first.insert(first.begin(), first.end());
 }
-/*Simbolos NTerminal::get_first(){
-    if(_first.empty())
-        this->first();
-    return _first;
-}*/
 
 void NTerminal::follow(){
     Simbolos s;
@@ -98,8 +95,6 @@ Simbolos NTerminal::get_follow(){
     return this->_follow;
 }
 
-
-
 bool NTerminal::firstContemEpsilon(Simbolos s){
     bool encontrou = false;
     for(auto A = s.begin(); A != s.end();A++){
@@ -109,11 +104,11 @@ bool NTerminal::firstContemEpsilon(Simbolos s){
     return encontrou;
 }
 
-void NTerminal::removerEpsilon(Simbolos s){
-    for(auto A = s.begin(); A != s.end();A++){
+void NTerminal::removerEpsilon(Simbolos * s){
+    for(auto A = s->begin(); A != s->end();A++){
         Simbolo * s1 = *A;
         if(s1->nome().compare(string("&")) == 0)
-            s.erase(A);
+            s->erase(A);
     }
 }
 
@@ -156,4 +151,9 @@ bool NTerminal::somenteNTerminais(FormaSentencial fs){
             return false;
     }
     return true;
+}
+
+bool NTerminal::ehRE(Simbolos * Ne){
+    Simbolos * firstNT = &get_first_NT(Ne);
+    return firstNT->find(this) != firstNT->end();
 }

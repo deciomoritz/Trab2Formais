@@ -85,8 +85,8 @@ int main(int argc, char *argv[])
                 "D -> e D | &\n"
                 "E -> c D | &\n"
                 "F -> d F | &";
-        g = l.ler(s);
-        cout << "=============TESTE FIRST NT============="<<endl;
+       g = l.ler(s);
+       cout << "=============TESTE FIRST NT============="<<endl;
        unordered_map<Simbolo*,Simbolos> teste = g.first_NT();
        for(auto it = teste.begin(); it != teste.end(); it++){
            Simbolo *A = it->first;
@@ -146,5 +146,48 @@ int main(int argc, char *argv[])
             else
                 cout << "Deriva epsilon fail!" << endl;
             i++;
+        }
+
+        s = "S -> B A a | b | B A\n"
+            "B -> a a | & | A | D\n"
+            "A -> S b b | B\n"
+            "D -> S A | S a";
+        g = l.ler(s);
+        cout << "Detectar NT RE da gramática: " << endl << endl << g.print();
+        for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+            NTerminal * nt = *it;
+            if(nt->ehRE(g.Ne()))
+                cout << nt->nome() << " é RE" << endl;
+            else
+                cout << nt->nome() << "não é RE" << endl;
+        }
+
+        s = "S -> A a | & | d\n"
+            "B -> c\n"
+            "A -> S B b | b";
+        g = l.ler(s);
+        cout << "Detectar NT RE da gramática: " << endl << endl << g.print();
+        for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+            NTerminal * nt = *it;
+            if(nt->ehRE(g.Ne()))
+                cout << nt->nome() << " é RE" << endl;
+            else
+                cout << nt->nome() << " não é RE" << endl;
+        }
+
+        s = "S -> A a | & | d\n"
+            "B -> c\n"
+            "A -> S B b | b";
+        g = l.ler(s);
+        cout << "Calcular first da gramática: " << endl << endl << g.print();
+        g.calculaFirst();
+        for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+            NTerminal * nt = *it;
+            cout << "NT: " << nt->nome() << endl;
+            for(auto it = nt->getFirst()->begin(); it != nt->getFirst()->end(); it++){
+                NTerminal * nt2 = *it;
+                cout << nt2->nome() << " ";
+            }
+            cout << endl;
         }
 }
