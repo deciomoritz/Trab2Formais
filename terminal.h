@@ -12,7 +12,10 @@ public:
     Terminal();
     Terminal(string nome);
     using Simbolo::get_first;
-    void first() override;
+    using Simbolo::ehNTerminal;
+    Simbolos first(Simbolos *X, Simbolos* Ne) override;
+
+    static Simbolo * contem(set<Terminal*> simbolos, Terminal s);
 };
 
 #endif // TERMINAL_H

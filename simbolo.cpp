@@ -4,18 +4,24 @@ Simbolo::Simbolo()
 {
 }
 
-void Simbolo::first(){
-    /*Simbolos s;
-    return s;*/
+Simbolos Simbolo::first(Simbolos *X, Simbolos* Ne){
 }
 
 string Simbolo::nome(){
     return _nome;
 }
 
-Simbolos Simbolo::get_first(){
-    if(this->_first.empty())
-        this->first();
+Simbolos Simbolo::get_first(Simbolos* Ne){
+    if(this->_first.empty()){
+        Simbolos s;
+        s.insert(this);
+       this->_first = this->first(&s, Ne);
+    }
     return this->_first;
+}
+bool Simbolo::ehNTerminal(){
+    string nome = this->nome();
+    char * c = nome.c_str();
+    return isupper(c[0]);
 }
 

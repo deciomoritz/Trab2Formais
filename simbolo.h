@@ -21,18 +21,14 @@ protected:
 public:
     Simbolo();
 
-    virtual void first();
+    virtual Simbolos first(Simbolos *X, Simbolos* Ne);
 
     bool operator== (const Simbolo &s) const{
         return _nome.compare(s._nome) == 0;
     }
-
-    Simbolos get_first();
+    bool ehNTerminal();
+    Simbolos get_first(Simbolos* Ne);
     string nome();
-
-    Simbolos * getFirst(){
-        return &_first;
-    }
 };
 
 #endif // SIMBOLO_H

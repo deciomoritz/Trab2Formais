@@ -21,25 +21,30 @@ class NTerminal : public Simbolo{
     using Simbolo::first;
 
 public:
+    using Simbolo::get_first;
+    using Simbolo::ehNTerminal;
+
     NTerminal();
     NTerminal(string nome);
 
     void addProducao(FormaSentencial f);
     set<FormaSentencial> * producoes();
+    void set_follow(Simbolos *S);
+    Simbolos* get_follow();
 
-    void first() override;
-    void follow();
-    using Simbolo::get_first;
+    Simbolos first(Simbolos *X, Simbolos* Ne) override;
+
     void first_NT(Simbolos *Ne);
-    static bool ehNTerminal(Simbolo a);
+    bool ehNTerminal(Simbolo a);
     Simbolos get_first_NT(Simbolos *Ne);
-    Simbolos get_follow();
 
     bool ehRE(Simbolos * Ne);
     
     bool derivaEpsilonDiretamente();
-    bool firstContemEpsilon(Simbolos s);
-    static void removerEpsilon(Simbolos * s);
+    static bool firstContemEpsilon(Simbolos s);
+    static void removerEpsilon(Simbolos *s);
+
+    static Simbolo * contem(set<NTerminal*> simbolos, NTerminal s);
 
     static bool somenteTerminais(FormaSentencial fs);
     static bool somenteNTerminais(FormaSentencial fs);

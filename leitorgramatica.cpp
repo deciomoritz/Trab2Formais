@@ -16,12 +16,12 @@ Gramatica LeitorGramatica::ler(string s) {
     for (int i = 0; i < producoes.size(); ++i) {
         string producao = producoes.at(i);
 
-        vector<string> formasSentenciais = split(producao, " ");
+        vector<string> formaSentencial = split(producao, " ");
 
         NTerminal * novoNT;
-        NTerminal * aux = g.contem(*g.nTerminais(), NTerminal(formasSentenciais.front()));
+        NTerminal * aux = NTerminal::contem(*g.nTerminais(), NTerminal(formaSentencial.front()));
         if(aux == NULL)
-            novoNT = new NTerminal(formasSentenciais.front());
+            novoNT = new NTerminal(formaSentencial.front());
         else
             novoNT = aux;
 
@@ -29,26 +29,38 @@ Gramatica LeitorGramatica::ler(string s) {
 
         FormaSentencial novaFS;
         novaFS.clear();
-        for (int i = 2; i < formasSentenciais.size(); ++i) {
-            string formaSentencial = formasSentenciais.at(i);
+        for (int i = 2; i < formaSentencial.size(); ++i) {
+            string simbolo = formaSentencial.at(i);
 
-            if(isupper(formaSentencial.at(0))){
-                aux = g.contem(*g.nTerminais(), NTerminal(formaSentencial));
+            if(isupper(simbolo.at(0))){
+                aux = NTerminal::contem(*g.nTerminais(), NTerminal(simbolo));
 
                 NTerminal * nt;
                 if(aux == NULL){
-                    nt = new NTerminal(formaSentencial);
+                    nt = new NTerminal(simbolo);
                     g.addNTerminal(nt);
                 }else
                     nt = aux;
 
                 novaFS.push_back(nt);
-            }else if(formaSentencial.compare(string("|")) != 0){
-                Terminal * t = new Terminal(formaSentencial);
+            }else if(simbolo.compare(string("|")) != 0){
+                Terminal * novoTerminal = Terminal::contem(*g.alfabeto(), Terminal(simbolo));
+
+                Terminal * t;
+
+                if(simbolo.compare(g.getEpsilon()->nome()) == 0)
+                    novoTerminal = g.getEpsilon();
+
+                if(novoTerminal == NULL){
+                    t = new Terminal(simbolo);
+                    g.alfabeto()->insert(t);
+                }else
+                    t = novoTerminal;
+
                 novaFS.push_back(t);
             }
 
-            if(formaSentencial.compare(string("|")) == 0 || i == formasSentenciais.size() - 1){
+            if(simbolo.compare(string("|")) == 0 || i == formaSentencial.size() - 1){
                 novoNT->addProducao(novaFS);
                 novaFS.clear();
                 continue;

@@ -12,10 +12,15 @@ using std::set;
 
 #include "nterminal.h"
 
+//Terminal * _epsilon;
+//Terminal * _dollar;
+
+
 class Gramatica
 {
     NTerminal * _inicial;
     set<NTerminal*> _NTerminais;
+    set<Terminal*> _alfabeto;
     Simbolos _Ne;
 
 public:
@@ -30,12 +35,12 @@ public:
     void setInicial(NTerminal * inicial);
 
     set<NTerminal*> * nTerminais();
+    set<Terminal*> * alfabeto();
 
     unordered_map<Simbolo*,Simbolos>  first_NT();
     unordered_map<Simbolo*,Simbolos>  first();
-    unordered_map<Simbolo*,Simbolos> follow();
-
-    Simbolo * contem(set<NTerminal*> simbolos, NTerminal s);
+    void follow();
+    void get_first(FormaSentencial::iterator it,FormaSentencial::iterator end, Simbolos * s);
 
     bool fertil(FormaSentencial fs, set<NTerminal*> ferteis);
 
@@ -43,7 +48,8 @@ public:
     Simbolos * Ne();
     bool derivaEpsilon(NTerminal * nt);
 
-    void calculaFirst();
+    Terminal * getEpsilon();
+    Terminal * getDollar();
 
     string print();
 };

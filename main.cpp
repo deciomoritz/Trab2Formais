@@ -47,147 +47,313 @@ int main(int argc, char *argv[])
     else
         cout << "Eliminar inalcançaveis falhou!" << endl;
 
-        g.eliminarInferteis();
-        string teste2 = "S(inicial) -> a A B | A | B \n"
-                "A -> B | C \n"
-                "B -> a | b \n"
-                "C -> A \n";
-        if(g.print().compare(teste2) == 0)
-            cout << "Eliminar inférteis OK!" << endl;
+    g.eliminarInferteis();
+    string teste2 = "S(inicial) -> a A B | A | B \n"
+                    "A -> B | C \n"
+                    "B -> a | b \n"
+                    "C -> A \n";
+    if(g.print().compare(teste2) == 0)
+        cout << "Eliminar inférteis OK!" << endl;
+    else
+        cout << "Eliminar inférteis falhou!" << endl;
+
+    s =
+            "S -> a A B | B | A\n"
+            "A -> C | B\n"
+            "B -> a | b | E\n"
+            "D -> a | b | F\n"
+            "C -> A | E\n"
+            "E -> F\n"
+            "F -> E";
+    teste2 =
+            "S(inicial) -> a A B | A | B \n"
+            "A -> B | C \n"
+            "B -> a | b \n"
+            "C -> A \n";
+    g = l.ler(s);
+    g.eliminarInuteis();
+    if(g.print().compare(teste2) == 0)
+        cout << "Eliminar inúteis OK!" << endl;
+    else
+        cout << "Eliminar inúteis falhou!" << endl;
+
+    s =
+            "S -> A C\n"
+            "A -> E F B\n"
+            "B -> a B | &\n"
+            "C -> b A C D | D\n"
+            "D -> e D | &\n"
+            "E -> c D | &\n"
+            "F -> d F | &";
+    g = l.ler(s);
+    cout << "=============TESTE FIRST NT============="<<endl;
+    unordered_map<Simbolo*,Simbolos> teste = g.first_NT();
+    for(auto it = teste.begin(); it != teste.end(); it++){
+        Simbolo *A = it->first;
+        string name = A->nome();
+        cout<<"First NT de : " <<name<< endl;
+        for(auto it2 = (it->second).begin();it2 !=(it->second).end(); it2++){
+            Simbolo * b = *it2;
+            cout << b->nome() << " , ";
+        }
+        cout << endl;
+    }
+    cout << "===================================="<<endl;
+    s = "S -> B A a | b\n"
+        "B -> a a | & | A\n"
+        "A -> S b b | B";
+    g = l.ler(s);
+    vector<bool> testeB = {false, true, true};
+    int i = 0;
+    for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
+        NTerminal * s = *A;
+
+        if(g.derivaEpsilon(s) == testeB.at(i))
+            cout << "Deriva epsilon ok!" << endl;
         else
-            cout << "Eliminar inférteis falhou!" << endl;
+            cout << "Deriva epsilon fail!" << endl;
+        i++;
+    }
 
-        s =
-                "S -> a A B | B | A\n"
-                "A -> C | B\n"
-                "B -> a | b | E\n"
-                "D -> a | b | F\n"
-                "C -> A | E\n"
-                "E -> F\n"
-                "F -> E";
-        teste2 =
-                "S(inicial) -> a A B | A | B \n"
-                "A -> B | C \n"
-                "B -> a | b \n"
-                "C -> A \n";
-        g = l.ler(s);
-        g.eliminarInuteis();
-        if(g.print().compare(teste2) == 0)
-            cout << "Eliminar inúteis OK!" << endl;
+    s = "S -> B A a | b | B A\n"
+        "B -> a a | & | A | D\n"
+        "A -> S b b | B\n"
+        "D -> S A | S a";
+    g = l.ler(s);
+    vector<bool> testeC = {true, true, true, true};
+    i = 0;
+    for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
+        NTerminal * s = *A;
+
+        if(g.derivaEpsilon(s) == testeC.at(i))
+            cout << "Deriva epsilon ok!" << endl;
         else
-            cout << "Eliminar inúteis falhou!" << endl;
+            cout << "Deriva epsilon fail!" << endl;
+        i++;
+    }
 
-        s =
-                "S -> A C\n"
-                "A -> E F B\n"
-                "B -> a B | &\n"
-                "C -> b A C D | D\n"
-                "D -> e D | &\n"
-                "E -> c D | &\n"
-                "F -> d F | &";
-       g = l.ler(s);
-       cout << "=============TESTE FIRST NT============="<<endl;
-       unordered_map<Simbolo*,Simbolos> teste = g.first_NT();
-       for(auto it = teste.begin(); it != teste.end(); it++){
-           Simbolo *A = it->first;
-           string name = A->nome();
-           cout<<"First NT de : " <<name<< endl;
-           for(auto it2 = (it->second).begin();it2 !=(it->second).end(); it2++){
-               Simbolo * b = *it2;
-               cout << b->nome() << " , ";
-           }
-           cout << endl;
-       }
-       cout << "===================================="<<endl;
-        s = "S -> B A a | b\n"
-            "B -> a a | & | A\n"
-            "A -> S b b | B";
-        g = l.ler(s);
-        vector<bool> testeB = {false, true, true};
-        int i = 0;
-        for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
-            NTerminal * s = *A;
+    s = "S -> B A a | b | A B\n"
+        "B -> a a | & | A\n"
+        "A -> S b b | B";
+    g = l.ler(s);
+    vector<bool> testeD = {true, true, true};
+    i = 0;
+    for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
+        NTerminal * s = *A;
 
-            if(g.derivaEpsilon(s) == testeB.at(i))
-                cout << "Deriva epsilon ok!" << endl;
-            else
-                cout << "Deriva epsilon fail!" << endl;
-            i++;
+        if(g.derivaEpsilon(s) == testeD.at(i))
+            cout << "Deriva epsilon ok!" << endl;
+        else
+            cout << "Deriva epsilon fail!" << endl;
+        i++;
+    }
+
+    s = "S -> B A a | b | B A\n"
+        "B -> a a | & | A | D\n"
+        "A -> S b b | B\n"
+        "D -> S A | S a";
+    g = l.ler(s);
+    cout << "Detectar NT RE da gramática: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        if(nt->ehRE(g.Ne()))
+            cout << nt->nome() << " é RE" << endl;
+        else
+            cout << nt->nome() << "não é RE" << endl;
+    }
+
+    s = "S -> A a | & | d\n"
+        "B -> c\n"
+        "A -> S B b | b";
+    g = l.ler(s);
+    cout << "Detectar NT RE da gramática: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        if(nt->ehRE(g.Ne()))
+            cout << nt->nome() << " é RE" << endl;
+        else
+            cout << nt->nome() << " não é RE" << endl;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    s = "S -> A a | & | d\n"
+        "B -> c\n"
+        "A -> S B b | b";
+    g = l.ler(s);
+    cout << "Calcular first da gramática: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        cout << "NT: " << nt->nome() << endl;
+        Simbolos first = nt->get_first(g.Ne());
+        for(auto it = first.begin(); it != first.end(); it++){
+            NTerminal * nt2 = *it;
+            cout << nt2->nome() << " ";
         }
+        cout << endl;
+    }
+    string esperado =
+            "S={&,d,b,c}\n"
+            "A={d,b,c}\n"
+            "B={c}\n";
+    cout << "Esperado: " << esperado << endl;
 
-        s = "S -> B A a | b | B A\n"
-            "B -> a a | & | A | D\n"
-            "A -> S b b | B\n"
-            "D -> S A | S a";
-        g = l.ler(s);
-        vector<bool> testeC = {true, true, true, true};
-        i = 0;
-        for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
-            NTerminal * s = *A;
+    //------------------------------------------------------------------------------------------------------------------
 
-            if(g.derivaEpsilon(s) == testeC.at(i))
-                cout << "Deriva epsilon ok!" << endl;
-            else
-                cout << "Deriva epsilon fail!" << endl;
-            i++;
+    s = "S -> A a | & | d\n"
+        "B -> c\n"
+        "A -> S A B b | b";
+    g = l.ler(s);
+    cout << "Calcular first da gramática: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        cout << "NT: " << nt->nome() << endl;
+        Simbolos first = nt->get_first(g.Ne());
+        for(auto it = first.begin(); it != first.end(); it++){
+            NTerminal * nt2 = *it;
+            cout << nt2->nome() << " ";
         }
-
-        s = "S -> B A a | b | A B\n"
-            "B -> a a | & | A\n"
-            "A -> S b b | B";
-        g = l.ler(s);
-        vector<bool> testeD = {true, true, true};
-        i = 0;
-        for(auto A = g.nTerminais()->begin(); A != g.nTerminais()->end();A++){
-            NTerminal * s = *A;
-
-            if(g.derivaEpsilon(s) == testeD.at(i))
-                cout << "Deriva epsilon ok!" << endl;
-            else
-                cout << "Deriva epsilon fail!" << endl;
-            i++;
+        cout << endl;
+    }
+    esperado =
+            "S={&,d,b}\n"
+            "A={d,b}\n"
+            "B={c}\n";
+    cout << "Esperado: " << esperado << endl;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "S -> A a | & | d\n"
+        "B -> c\n"
+        "A -> S A B b | b";
+    g = l.ler(s);
+    cout << "Calcular first da gramática: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        cout << "NT: " << nt->nome() << endl;
+        Simbolos first = nt->get_first(g.Ne());
+        for(auto it = first.begin(); it != first.end(); it++){
+            NTerminal * nt2 = *it;
+            cout << nt2->nome() << " ";
         }
-
-        s = "S -> B A a | b | B A\n"
-            "B -> a a | & | A | D\n"
-            "A -> S b b | B\n"
-            "D -> S A | S a";
-        g = l.ler(s);
-        cout << "Detectar NT RE da gramática: " << endl << endl << g.print();
-        for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
-            NTerminal * nt = *it;
-            if(nt->ehRE(g.Ne()))
-                cout << nt->nome() << " é RE" << endl;
-            else
-                cout << nt->nome() << "não é RE" << endl;
+        cout << endl;
+    }
+    esperado =
+            "S={&,d,b}\n"
+            "A={d,b}\n"
+            "B={c}\n";
+    cout << "Esperado: " << esperado << endl;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "P -> B P1\n"
+        "P1 -> ; B P1 | &\n"
+        "B -> K V C\n"
+        "K -> c K | &\n"
+        "V -> v V | &\n"
+        "C -> b C2 | C1\n"
+        "C1 -> com C1 | &\n"
+        "C2 -> K V ; C e C1 | C e C1";
+    g = l.ler(s);
+    cout << "Calcular first da gramática __7a__: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        cout << "NT: " << nt->nome() << endl;
+        Simbolos first = nt->get_first(g.Ne());
+        for(auto it = first.begin(); it != first.end(); it++){
+            NTerminal * nt2 = *it;
+            cout << nt2->nome() << " ";
         }
-
-        s = "S -> A a | & | d\n"
-            "B -> c\n"
-            "A -> S B b | b";
-        g = l.ler(s);
-        cout << "Detectar NT RE da gramática: " << endl << endl << g.print();
-        for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
-            NTerminal * nt = *it;
-            if(nt->ehRE(g.Ne()))
-                cout << nt->nome() << " é RE" << endl;
-            else
-                cout << nt->nome() << " não é RE" << endl;
+        cout << endl;
+    }
+    esperado =
+            "P={&,c,v,com,;}\n"
+            "P1={&,;}\n"
+            "B={c,v,b,com,&}\n"
+            "K={c,&}\n"
+            "V={v,&}\n"
+            "C={b,com,&}\n"
+            "C1={com,&}\n"
+            "C2={c,v,;,b,com,e}\n";
+    cout << "Esperado: " << esperado << endl;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "S -> A a | & | d\n"
+        "B -> c\n"
+        "A -> S A B b | b";
+    g = l.ler(s);
+    cout << "Calcular follow da gramática: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        cout << "NT: " << nt->nome() << endl;
+        g.follow();
+        Simbolos * follow = nt->get_follow();
+        for(auto it = follow->begin(); it != follow->end(); it++){
+            NTerminal * nt2 = *it;
+            cout << nt2->nome() << " ";
         }
-
-        s = "S -> A a | & | d\n"
-            "B -> c\n"
-            "A -> S B b | b";
-        g = l.ler(s);
-        cout << "Calcular first da gramática: " << endl << endl << g.print();
-        g.calculaFirst();
-        for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
-            NTerminal * nt = *it;
-            cout << "NT: " << nt->nome() << endl;
-            for(auto it = nt->getFirst()->begin(); it != nt->getFirst()->end(); it++){
-                NTerminal * nt2 = *it;
-                cout << nt2->nome() << " ";
-            }
-            cout << endl;
+        cout << endl;
+    }
+    esperado =
+            "S={$,d,b}\n"
+            "A={a,c}\n"
+            "B={b}\n";
+    cout << "Esperado: " << esperado << endl;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "S -> A B\n"
+        "A -> C D A1\n"
+        "A1 -> a A1 | &\n"
+        "B -> b A B B1 | B1\n"
+        "B1 -> e B1 | &\n"
+        "C -> c C | &\n"
+        "D -> d D | &\n";
+    g = l.ler(s);
+    cout << "Calcular follow da gramática: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        cout << "NT: " << nt->nome() << endl;
+        g.follow();
+        Simbolos * follow = nt->get_follow();
+        for(auto it = follow->begin(); it != follow->end(); it++){
+            NTerminal * nt2 = *it;
+            cout << nt2->nome() << " ";
         }
+        cout << endl;
+    }
+    esperado =
+            "S={$}\n"
+            "A={b,e,$}\n"
+            "A1={b,e,$}\n"
+            "B={e,$}\n"
+            "B1={e,$}\n"
+            "C={b,d,e,a,$}\n"
+            "D={b,e,a,$}\n";
+    cout << "Esperado: " << esperado << endl;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "P -> B P1\n"
+        "P1 -> ; B P1 | &\n"
+        "B -> K V C\n"
+        "K -> c K | &\n"
+        "V -> v V | &\n"
+        "C -> b C2 | C1\n"
+        "C1 -> com C1 | &\n"
+        "C2 -> K V ; C e C1 | C e C1";
+    g = l.ler(s);
+    cout << "Calcular follow da gramática: " << endl << endl << g.print();
+    for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
+        NTerminal * nt = *it;
+        cout << "NT: " << nt->nome() << endl;
+        g.follow();
+        Simbolos * follow = nt->get_follow();
+        for(auto it = follow->begin(); it != follow->end(); it++){
+            NTerminal * nt2 = *it;
+            cout << nt2->nome() << " ";
+        }
+        cout << endl;
+    }
+    esperado =
+            "P={$}\n"
+            "P1={$}\n"
+            "B={;,$}\n"
+            "K={v,;,b,com,$}\n"
+            "V={b,com,;,$}\n"
+            "C={e,;,$}\n"
+            "C1={e,;,$}\n"
+            "C2={e,;,$}\n";
+    cout << "Esperado: " << esperado << endl;
+    //------------------------------------------------------------------------------------------------------------------
 }

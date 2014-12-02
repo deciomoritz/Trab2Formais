@@ -4,6 +4,9 @@ Gramatica::Gramatica()
 {
 }
 
+Terminal _dollar("$");
+Terminal _epsilon("&");
+
 void Gramatica::calculaNe(){
 
     for(auto B = _NTerminais.begin(); B != _NTerminais.end();B++){
@@ -11,9 +14,7 @@ void Gramatica::calculaNe(){
         if(s->derivaEpsilonDiretamente())
             _Ne.insert(s);
     }
-
     Simbolos novoNe;
-
     do{
         novoNe.insert(_Ne.begin(), _Ne.end());
         for(auto B = _NTerminais.begin(); B != _NTerminais.end();B++){
@@ -115,11 +116,9 @@ void Gramatica::eliminarInalcancaveis(){
 
             for (int i = 0; i < fs.size(); ++i){
                 Simbolo * s = fs.at(i);
-                string tipo = typeid(*s).name();
-                tipo.erase(tipo.begin());
-                if(tipo.compare("NTerminal") == 0){
+                if(s->ehNTerminal()){
                     NTerminal * aux = s;
-                    if(!contem(alcancaveis, *aux))
+                    if(!NTerminal::contem(alcancaveis, *aux))
                         alcancaveis.insert(s);
                 }
             }
@@ -153,15 +152,6 @@ string Gramatica::print(){
     return saida;
 }
 
-Simbolo * Gramatica::contem(set<NTerminal*> simbolos, NTerminal s){
-    for(auto A = simbolos.begin(); A != simbolos.end();A++){
-        NTerminal * s1 = *A;
-        if(s1->nome().compare(s.nome()) == 0)
-            return s1;
-    }
-    return NULL;
-}
-
 void Gramatica::setInicial(NTerminal * inicial){
     _inicial = inicial;
 }
@@ -175,28 +165,25 @@ bool Gramatica::fertil(FormaSentencial fs, set<NTerminal*> ferteis){
 
     for (int i = 0; i < fs.size(); ++i) {
         Simbolo * s = fs.at(i);
-        string tipo = typeid(*s).name();
-        tipo.erase(tipo.begin());
-        if(tipo.compare("NTerminal") == 0)
+        if(s->ehNTerminal())
             nTerminais.insert(s);
     }
     for(auto A = nTerminais.begin(); A != nTerminais.end();A++){
         NTerminal * nt = *A;
 
         bool contido = false;
-         for(auto B = ferteis.begin(); B != ferteis.end();B++){
+        for(auto B = ferteis.begin(); B != ferteis.end();B++){
             NTerminal * fert = *B;
 
             if(nt->nome().compare(fert->nome()) == 0)
                 contido = true;
-         }
-         if(!contido)
-             return false;
-         contido = false;
+        }
+        if(!contido)
+            return false;
+        contido = false;
     }
     return true;
 }
-
 unordered_map<Simbolo*,Simbolos> Gramatica::first_NT(){
     unordered_map<Simbolo*,Simbolos> retorno;
     for(auto it = _NTerminais.begin(); it!= _NTerminais.end(); it++){
@@ -210,83 +197,78 @@ unordered_map<Simbolo*,Simbolos> Gramatica::first(){
     unordered_map<Simbolo*,Simbolos> retorno;
     for(auto it = _NTerminais.begin(); it!= _NTerminais.end(); it++){
         NTerminal *A = (*it);
-        retorno.insert({A, A->get_first()});
+        retorno.insert({A, A->get_first(&_Ne )});
     }
     return retorno;
 }
 
-unordered_map<Simbolo*,Simbolos> Gramatica::follow(){
-    unordered_map<Simbolo*,Simbolos> retorno;
-    for(auto it = _NTerminais.begin(); it!= _NTerminais.end(); it++){
-        NTerminal *A = (*it);
-        retorno.insert({A, A->get_follow()});
-    }
-    return retorno;
-}
-
-void Gramatica::calculaFirst(){
-
-    for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
-        NTerminal * nt = *A;
-
-        for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
-            FormaSentencial fs = *B;
-
-            for(auto C = fs.begin(); C != fs.end();C++){
-                Simbolo * s = *C;
-
-                if(!NTerminal::ehNTerminal(*s)){
-                    nt->getFirst()->insert(s);
-                }else{
-                    NTerminal * nt2 = s;
-                    if(nt2->ehRE(&_Ne))
-                        break;
-                    nt2->first();
-                    nt->getFirst()->insert(nt2->getFirst()->begin(), nt2->getFirst()->end());
-                    break;
-                }
-            }
-        }
-    }
-
-    Simbolos newFirst;
-    bool houveAlteracao = false;
-
+void Gramatica::follow(){
+    bool atualizou;
+    _inicial->get_follow()->insert(&_dollar);
     do{
-        for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
-            NTerminal * nt = *A;
-            newFirst.insert(nt->getFirst()->begin(), nt->getFirst()->end());
-
-            for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
-                FormaSentencial fs = *B;
-
-                bool continuar = false;
-                for(auto C = fs.begin(); C != fs.end();C++){
-                    Simbolo * s = *C;
-                    if(NTerminal::ehNTerminal(*s)){
-                        NTerminal * nt2 = s;
-                        if(!nt2->ehRE(&_Ne) && !continuar)
-                            break;
-                        continuar = false;
-                        nt->getFirst()->insert(nt2->getFirst()->begin(),nt2->getFirst()->end());
-
-                        houveAlteracao = false;
-                        if(*nt->getFirst() != newFirst)
-                            houveAlteracao = true;
-
-                        if(derivaEpsilon(nt2))
-                            continuar = true;
-                    }else
+        atualizou = false;
+        for(auto it_firstNT = _NTerminais.begin(); it_firstNT != _NTerminais.end(); it_firstNT++){
+            NTerminal *A = *it_firstNT;
+            set<FormaSentencial> *prod_A = A->producoes();
+            for(auto it_prod = prod_A->begin(); it_prod != prod_A->end(); it_prod++){
+                FormaSentencial fs = *it_prod;
+                for(auto it_simb = fs.begin(); it_simb != fs.end(); it_simb++){
+                    Simbolo *x = *it_simb;
+                    if(!x->ehNTerminal()) // se é um símbolo Terminal, ler o próximo
+                        continue;
+                    NTerminal *nt = x;
+                    Simbolos* nt_follow = nt->get_follow();
+                    if(it_simb == --fs.end()){//ele é o último não terminal da sentença
+                        Simbolos *s1 = A->get_follow();
+                        int tamanho_velho = nt_follow->size();
+                        nt_follow->insert(s1->begin(), s1->end()); // coloca o follow de A nele
+                        int tamanho_novo = nt_follow->size();
+                        if(!atualizou) atualizou = tamanho_velho!=tamanho_novo;//se o tamanho do velho for igual ao novo, foi adicionado algo ao follow
                         break;
+                    }
+                    Simbolos first;
+                    get_first((++it_simb), (fs.end()), &first);
+                    --it_simb;
+                    int tamanho_velho = nt_follow->size();
+                    if(NTerminal::firstContemEpsilon(first)){
+                            NTerminal::removerEpsilon(&first);
+                        nt_follow->insert(A->get_follow()->begin(), A->get_follow()->end());
+                    }
+                    nt_follow->insert(first.begin(), first.end());
+                    int tamanho_novo = nt_follow->size();
+                   if(!atualizou) atualizou = tamanho_velho!=tamanho_novo;//se o tamanho do velho for igual ao novo, foi adicionado algo ao follow
                 }
             }
         }
-    }while (houveAlteracao);
+    }while(atualizou);
+}
 
-    for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
-        NTerminal * nt = *A;
+void Gramatica::get_first(FormaSentencial::iterator it,FormaSentencial::iterator end, Simbolos * retorno){
+    //retorna o first de uma forma sentencial. esses elementos serão o follow de outro símbolo que fez a chamada.
+    if(it == end)
+        return;
 
-        if(!derivaEpsilon(nt))
-            NTerminal::removerEpsilon(nt->getFirst());
+    Simbolo * aux = *it;
+    Simbolos first = aux->get_first(&_Ne);
+
+    if(NTerminal::firstContemEpsilon(first)){
+        if(++it != end){
+            NTerminal::removerEpsilon(&first);
+            it--;
+            get_first(++it, end, retorno);
+        }
     }
+    retorno->insert(first.begin(), first.end());
+}
+
+set<Terminal*> * Gramatica::alfabeto(){
+    return &_alfabeto;
+}
+
+Terminal * Gramatica::getEpsilon(){
+    return &_epsilon;
+}
+
+Terminal * Gramatica::getDollar(){
+    return &_dollar;
 }
