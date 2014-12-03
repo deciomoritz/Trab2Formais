@@ -15,13 +15,13 @@ using std::set;
 //Terminal * _epsilon;
 //Terminal * _dollar;
 
-
 class Gramatica
 {
     NTerminal * _inicial;
     set<NTerminal*> _NTerminais;
     set<Terminal*> _alfabeto;
     Simbolos _Ne;
+    unordered_map<NTerminal*,unordered_map<Terminal*,pair<FormaSentencial,int>>> _tabelaParse;
 
 public:
     Gramatica();
@@ -44,12 +44,21 @@ public:
 
     bool fertil(FormaSentencial fs, set<NTerminal*> ferteis);
 
+    void tabelaParse();
+    string printarTP();
+
     void calculaNe();
     Simbolos * Ne();
     bool derivaEpsilon(NTerminal * nt);
 
     Terminal * getEpsilon();
     Terminal * getDollar();
+
+    bool testaLL1();
+    bool testaRE();
+    bool testaFatorada();
+    bool testaFirstFollow();
+    bool interseccaoVazia(vector<Simbolos> conj);
 
     string print();
 };

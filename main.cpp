@@ -333,7 +333,7 @@ int main(int argc, char *argv[])
         "C1 -> com C1 | &\n"
         "C2 -> K V ; C e C1 | C e C1";
     g = l.ler(s);
-    cout << "Calcular follow da gramática: " << endl << endl << g.print();
+    cout << "Calcular follow da gramática __7a__: " << endl << endl << g.print();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         cout << "NT: " << nt->nome() << endl;
@@ -356,4 +356,21 @@ int main(int argc, char *argv[])
             "C2={e,;,$}\n";
     cout << "Esperado: " << esperado << endl;
     //------------------------------------------------------------------------------------------------------------------
+    s = "P -> B P1\n"
+        "P1 -> ; B P1 | &\n"
+        "B -> K V C\n"
+        "K -> c K | &\n"
+        "V -> v V | &\n"
+        "C -> b C2 | C1\n"
+        "C1 -> com C1 | &\n"
+        "C2 -> K V ; C e C1 | C e C1";
+    g = l.ler(s);
+    cout << "Calcular tabela de parse da gramática __7a__: " << endl << endl;
+    cout << g.print();
+    g.tabelaParse();
+    string tabela = g.printarTP();
+
+    cout << endl;
+    cout << tabela;
+
 }

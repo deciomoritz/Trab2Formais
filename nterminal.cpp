@@ -87,7 +87,7 @@ Simbolos NTerminal::first(Simbolos *X, Simbolos* Ne){
             temp = fs.at(i)->first(&teste, Ne); // calcule o first do primeiro símbolo.
             teste.erase(fs.at(i));
             first.insert(temp.begin(), temp.end());//                first = first U temp;
-            if(firstContemEpsilon(temp)){ //encontrou & transição;
+            if(contemEpsilon(temp)){ //encontrou & transição;
                 if(i != fs.size() - 1){ //se ainda não for o último símbolo da produção, não se pode concluir que & pertence a first ainda. Calcular first do próximo.
                     e_found = true; //avisa que & foi encontrado e
                     i++;//indice para calcular o first do próximo símbolo
@@ -101,7 +101,7 @@ Simbolos NTerminal::first(Simbolos *X, Simbolos* Ne){
     return first;
 }
 
-bool NTerminal::firstContemEpsilon(Simbolos s){
+bool NTerminal::contemEpsilon(Simbolos s){
     for(auto A = s.begin(); A != s.end();A++){
         Simbolo * s1 = *A;
         if(s1->nome().compare(string("&")) == 0)

@@ -132,17 +132,14 @@ string Gramatica::print(){
     string saida = "";
     for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
         NTerminal * nt = *A;
-
         if(nt->nome().compare(_inicial->nome()) == 0)
             saida += nt->nome()+"(inicial)" + " -> ";
         else
             saida += nt->nome() + " -> ";
         for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
             FormaSentencial fs = *B;
-
             for (int i = 0; i < fs.size(); ++i)
                 saida += fs.at(i)->nome() + " ";
-
             saida += "| ";
         }
         saida.pop_back();
@@ -230,7 +227,7 @@ void Gramatica::follow(){
                     get_first((++it_simb), (fs.end()), &first);
                     --it_simb;
                     int tamanho_velho = nt_follow->size();
-                    if(NTerminal::firstContemEpsilon(first)){
+                    if(NTerminal::contemEpsilon(first)){
                             NTerminal::removerEpsilon(&first);
                         nt_follow->insert(A->get_follow()->begin(), A->get_follow()->end());
                     }
@@ -251,7 +248,7 @@ void Gramatica::get_first(FormaSentencial::iterator it,FormaSentencial::iterator
     Simbolo * aux = *it;
     Simbolos first = aux->get_first(&_Ne);
 
-    if(NTerminal::firstContemEpsilon(first)){
+    if(NTerminal::contemEpsilon(first)){
         if(++it != end){
             NTerminal::removerEpsilon(&first);
             it--;
@@ -271,4 +268,157 @@ Terminal * Gramatica::getEpsilon(){
 
 Terminal * Gramatica::getDollar(){
     return &_dollar;
+}
+
+void Gramatica::tabelaParse(){
+
+    unordered_map<NTerminal*,unordered_map<Terminal*,pair<FormaSentencial,int>>> tabela;
+
+    int k = 1;
+
+    for(auto it_NTs = _NTerminais.begin(); it_NTs != _NTerminais.end(); it_NTs++){
+        NTerminal * nt = *it_NTs;
+        for(auto it_prod = nt->producoes()->begin(); it_prod != nt->producoes()->end(); it_prod++){
+            FormaSentencial fs = *it_prod;
+
+            Simbolos first;
+            get_first(fs.begin(), fs.end(), &first);
+
+            FormaSentencial prodQueContemEpsilon;
+            if(NTerminal::contemEpsilon(first)){
+                prodQueContemEpsilon = fs;
+
+                Simbolos * follow = nt->get_follow();
+
+                for(auto it_follow = follow->begin(); it_follow != follow->end(); it_follow++){
+                    Simbolo * terminal = *it_follow;
+
+                    tabela[nt][terminal] = make_pair(fs,k);
+                }
+            }
+
+            for(auto it_first = first.begin(); it_first != first.end(); it_first++){
+                Simbolo * terminal = *it_first;
+
+                if(terminal->nome().compare(_epsilon.nome()) == 0)
+                    continue;
+
+                tabela[nt][terminal] = make_pair(fs,k);
+            }
+            k++;
+        }
+    }
+    _tabelaParse = tabela;
+}
+
+string Gramatica::printarTP(){
+
+    string tabela;
+
+    tabela += "\t";
+
+    for(auto it_Ts = _alfabeto.begin(); it_Ts != _alfabeto.end(); it_Ts++){
+        Terminal * t = *it_Ts;
+        tabela += t->nome() + "\t";
+    }
+    tabela += "$\t";
+    tabela += "\n";
+
+    for(auto it_NTs = _NTerminais.begin(); it_NTs != _NTerminais.end(); it_NTs++){
+        NTerminal * nt = *it_NTs;
+        tabela += nt->nome() + "\t";
+        for(auto it_Ts = _alfabeto.begin(); it_Ts != _alfabeto.end(); it_Ts++){
+            Terminal * t = *it_Ts;
+
+            pair<FormaSentencial,int> fs = _tabelaParse[nt][t];
+
+            if(fs.first.begin() != fs.first.end())
+                tabela += to_string(fs.second);
+            else
+                tabela += "-";
+
+            tabela += "\t";
+        }
+        pair<FormaSentencial,int> fs2 = _tabelaParse[nt][&_dollar];
+        if(fs2.first.begin() != fs2.first.end())
+            tabela += to_string(fs2.second);
+        else
+            tabela += "-";
+
+        tabela += "\t";
+
+        tabela += "\n";
+    }
+    return tabela;
+}
+
+bool Gramatica::testaRE(){
+    for(auto it_NT = _NTerminais.begin(); it_NT!= _NTerminais.end(); it_NT++){
+        NTerminal *nt = *it_NT;
+        vector<Simbolos> teste;
+        Simbolos conj;
+        conj.insert(nt);
+        teste.push_back(conj);
+        teste.push_back(nt->get_first_NT(&_Ne));
+        if(!interseccaoVazia(teste))
+            return false;
+    }
+    return true;
+}
+
+bool Gramatica::testaFatorada(){
+    for(auto it_NT = _NTerminais.begin(); it_NT!= _NTerminais.end(); it_NT++){
+        NTerminal *nt = *it_NT;
+        set<FormaSentencial> *prod = nt->producoes();
+        if(prod->size()==1)
+            continue;
+        vector<Simbolos> teste;
+        for(auto it_prod = prod->begin(); it_prod != prod->end(); it_prod++){
+            FormaSentencial fs = *it_prod;
+            Simbolos s;
+            get_first(fs.begin(), fs.end(), &s);
+            teste.push_back(s);
+        }
+
+        if(!interseccaoVazia(teste))
+            return false;
+    }
+    return true;
+}
+
+bool Gramatica::testaFirstFollow(){
+    this->follow();
+    for(auto it_NT = _NTerminais.begin(); it_NT!= _NTerminais.end(); it_NT++){
+        NTerminal *nt = *it_NT;
+        vector<Simbolos> teste;
+        Simbolos first = nt->get_first(&_Ne);
+        if(!NTerminal::contemEpsilon(first))
+            continue;
+        Simbolos *follow = nt->get_follow();
+        teste.push_back(first);
+        teste.push_back(*follow);
+        if(!interseccaoVazia(teste))
+            return false;
+    }
+    return true;
+}
+
+bool Gramatica::testaLL1(){
+    return (this->testaRE() && this->testaFatorada() && this->testaFirstFollow());
+}
+
+bool Gramatica::interseccaoVazia(vector<Simbolos> conj){
+       Simbolos velho = conj.at(0);
+
+       for(auto it_conj = ++conj.begin(); it_conj!= conj.end(); it_conj++){
+           Simbolos teste = *it_conj;
+           Simbolos novo;
+           for(auto it_simb = velho.begin(); it_simb!= velho.end();it_simb++){
+               Simbolo *simb =*it_simb;
+               if(teste.find(simb)!= teste.end())
+                   novo.insert(simb);
+           }
+           velho = novo;
+       }
+       return velho.empty();
 }

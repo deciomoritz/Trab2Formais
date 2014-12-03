@@ -41,7 +41,7 @@ public:
     bool ehRE(Simbolos * Ne);
     
     bool derivaEpsilonDiretamente();
-    static bool firstContemEpsilon(Simbolos s);
+    static bool contemEpsilon(Simbolos s);
     static void removerEpsilon(Simbolos *s);
 
     static Simbolo * contem(set<NTerminal*> simbolos, NTerminal s);

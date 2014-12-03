@@ -68,6 +68,10 @@ Gramatica LeitorGramatica::ler(string s) {
         }
     }
     g.calculaNe();
+    g.follow();
+    g.first();
+    g.first_NT();
+
     return g;
 }
 
