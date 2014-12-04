@@ -12,8 +12,7 @@ using std::set;
 
 #include "nterminal.h"
 
-//Terminal * _epsilon;
-//Terminal * _dollar;
+typedef vector<Terminal*> Sentenca;
 
 class Gramatica
 {
@@ -32,35 +31,51 @@ public:
     void eliminarInalcancaveis();
     void eliminarInuteis();
 
+    void construirTabelaParse();
+    void calculaNe();
     void setInicial(NTerminal * inicial);
+    void follow();
 
-    set<NTerminal*> * nTerminais();
-    set<Terminal*> * alfabeto();
+    void get_first(FormaSentencial::iterator it,FormaSentencial::iterator end, Simbolos * s);
 
     unordered_map<Simbolo*,Simbolos>  first_NT();
     unordered_map<Simbolo*,Simbolos>  first();
-    void follow();
-    void get_first(FormaSentencial::iterator it,FormaSentencial::iterator end, Simbolos * s);
 
-    bool fertil(FormaSentencial fs, set<NTerminal*> ferteis);
+    set<NTerminal*> * nTerminais(){
+        return &_NTerminais;
+    }
 
-    void tabelaParse();
-    string printarTP();
+    NTerminal * inicial(){
+        return _inicial;
+    }
 
-    void calculaNe();
-    Simbolos * Ne();
-    bool derivaEpsilon(NTerminal * nt);
+    Simbolos * Gramatica::Ne(){
+        return &_Ne;
+    }
+
+    set<Terminal*> * alfabeto(){
+        return &_alfabeto;
+    }
+
+    unordered_map<NTerminal*,unordered_map<Terminal*,pair<FormaSentencial,int>>> * tabelaParse(){
+        return &_tabelaParse;
+    }
 
     Terminal * getEpsilon();
     Terminal * getDollar();
 
+
+    bool fertil(FormaSentencial fs, set<NTerminal*> ferteis);
+    bool derivaEpsilon(NTerminal * nt);
     bool testaLL1();
     bool testaRE();
     bool testaFatorada();
     bool testaFirstFollow();
     bool interseccaoVazia(vector<Simbolos> conj);
 
-    string print();
+    string printaGramatica();
+    string printarTP();
+
 };
 
 #endif // GRAMATICA_H

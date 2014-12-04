@@ -26,6 +26,7 @@ public:
     bool operator== (const Simbolo &s) const{
         return _nome.compare(s._nome) == 0;
     }
+
     bool ehNTerminal();
     Simbolos get_first(Simbolos* Ne);
     string nome();

@@ -87,3 +87,31 @@ vector<string> LeitorGramatica::split(string s, string delimiter) {
     tokens.push_back(s);
     return tokens;
 }
+
+void LeitorGramatica::gravar(Gramatica g, string nomeArquivo){
+    ofstream arquivo;
+    arquivo.open(nomeArquivo);
+    arquivo << g.printaGramatica();
+    arquivo.close();
+}
+
+Gramatica LeitorGramatica::recuperar(string nomeArquivo){
+    ifstream arquivo;
+    string linha;
+    string conteudo = "";
+
+    arquivo.open(nomeArquivo);
+
+    if(arquivo.is_open()){
+        while (getline(arquivo,linha)) {
+            linha.pop_back();
+            conteudo += linha + "\n";
+        }
+    }
+    conteudo.pop_back();
+    arquivo.close();
+
+    return ler(conteudo);
+}
+
+

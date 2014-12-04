@@ -41,8 +41,12 @@ bool Gramatica::derivaEpsilon(NTerminal * nt){
     return _Ne.find(nt) != _Ne.end();
 }
 
-Simbolos * Gramatica::Ne(){
-    return &_Ne;
+Terminal * Gramatica::getEpsilon(){
+    return &_epsilon;
+}
+
+Terminal * Gramatica::getDollar(){
+    return &_dollar;
 }
 
 void Gramatica::addNTerminal(NTerminal * nt){
@@ -128,14 +132,21 @@ void Gramatica::eliminarInalcancaveis(){
     _NTerminais.insert(alcancaveis.begin(),alcancaveis.end());
 }
 
-string Gramatica::print(){
+string Gramatica::printaGramatica(){
+
     string saida = "";
+    vector<string> saida2;
+
+    int iniPos = 0;
+    int k = 0;
+
     for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
         NTerminal * nt = *A;
+
         if(nt->nome().compare(_inicial->nome()) == 0)
-            saida += nt->nome()+"(inicial)" + " -> ";
-        else
-            saida += nt->nome() + " -> ";
+            iniPos = k;
+
+        saida += nt->nome() + " -> ";
         for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
             FormaSentencial fs = *B;
             for (int i = 0; i < fs.size(); ++i)
@@ -145,16 +156,23 @@ string Gramatica::print(){
         saida.pop_back();
         saida.pop_back();
         saida += "\n";
+        saida2.push_back(saida);
+        saida = "";
+        k++;
     }
+
+    saida = saida2.at(iniPos);
+    for (int i = 0; i < saida2.size(); ++i) {
+        if(i == iniPos)
+            continue;
+        saida += saida2.at(i);
+    }
+
     return saida;
 }
 
 void Gramatica::setInicial(NTerminal * inicial){
     _inicial = inicial;
-}
-
-set<NTerminal*> * Gramatica::nTerminais(){
-    return &_NTerminais;
 }
 
 bool Gramatica::fertil(FormaSentencial fs, set<NTerminal*> ferteis){
@@ -258,19 +276,7 @@ void Gramatica::get_first(FormaSentencial::iterator it,FormaSentencial::iterator
     retorno->insert(first.begin(), first.end());
 }
 
-set<Terminal*> * Gramatica::alfabeto(){
-    return &_alfabeto;
-}
-
-Terminal * Gramatica::getEpsilon(){
-    return &_epsilon;
-}
-
-Terminal * Gramatica::getDollar(){
-    return &_dollar;
-}
-
-void Gramatica::tabelaParse(){
+void Gramatica::construirTabelaParse(){
 
     unordered_map<NTerminal*,unordered_map<Terminal*,pair<FormaSentencial,int>>> tabela;
 
@@ -361,9 +367,9 @@ bool Gramatica::testaRE(){
         teste.push_back(conj);
         teste.push_back(nt->get_first_NT(&_Ne));
         if(!interseccaoVazia(teste))
-            return false;
+            return true;
     }
-    return true;
+    return false;
 }
 
 bool Gramatica::testaFatorada(){
@@ -372,16 +378,23 @@ bool Gramatica::testaFatorada(){
         set<FormaSentencial> *prod = nt->producoes();
         if(prod->size()==1)
             continue;
-        vector<Simbolos> teste;
-        for(auto it_prod = prod->begin(); it_prod != prod->end(); it_prod++){
-            FormaSentencial fs = *it_prod;
-            Simbolos s;
-            get_first(fs.begin(), fs.end(), &s);
-            teste.push_back(s);
-        }
 
-        if(!interseccaoVazia(teste))
-            return false;
+        for(auto it_prod = prod->begin(); it_prod != prod->end(); it_prod++){
+            FormaSentencial fs1 = *it_prod;
+            Simbolos first_fs1;
+            get_first(fs1.begin(), fs1.end(), &first_fs1);
+            for(auto it_prod2 = ++it_prod; it_prod2 != prod->end(); it_prod2++){
+                vector<Simbolos> teste;
+                FormaSentencial fs2= *it_prod2;
+                Simbolos first_fs2;
+                get_first(fs2.begin(), fs2.end(), &first_fs2);
+                teste.push_back(first_fs1);
+                teste.push_back(first_fs2);
+                it_prod--;
+                if(!interseccaoVazia(teste))
+                    return false;
+            }
+        }
     }
     return true;
 }
@@ -402,9 +415,9 @@ bool Gramatica::testaFirstFollow(){
     }
     return true;
 }
-
 bool Gramatica::testaLL1(){
     return (this->testaRE() && this->testaFatorada() && this->testaFirstFollow());
+
 }
 
 bool Gramatica::interseccaoVazia(vector<Simbolos> conj){

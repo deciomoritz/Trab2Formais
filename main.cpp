@@ -10,6 +10,8 @@ using namespace std;
 
 #include "leitorgramatica.h"
 
+#include "analisadorsintatico.h"
+
 int main(int argc, char *argv[])
 {
     //    QApplication a(argc, argv);
@@ -42,7 +44,7 @@ int main(int argc, char *argv[])
             "C -> A | E \n"
             "E -> F \n"
             "F -> E \n";
-    if(g.print().compare(teste1) == 0)
+    if(g.printaGramatica().compare(teste1) == 0)
         cout << "Eliminar inalcançaveis OK!" << endl;
     else
         cout << "Eliminar inalcançaveis falhou!" << endl;
@@ -52,7 +54,7 @@ int main(int argc, char *argv[])
                     "A -> B | C \n"
                     "B -> a | b \n"
                     "C -> A \n";
-    if(g.print().compare(teste2) == 0)
+    if(g.printaGramatica().compare(teste2) == 0)
         cout << "Eliminar inférteis OK!" << endl;
     else
         cout << "Eliminar inférteis falhou!" << endl;
@@ -72,7 +74,7 @@ int main(int argc, char *argv[])
             "C -> A \n";
     g = l.ler(s);
     g.eliminarInuteis();
-    if(g.print().compare(teste2) == 0)
+    if(g.printaGramatica().compare(teste2) == 0)
         cout << "Eliminar inúteis OK!" << endl;
     else
         cout << "Eliminar inúteis falhou!" << endl;
@@ -153,7 +155,7 @@ int main(int argc, char *argv[])
         "A -> S b b | B\n"
         "D -> S A | S a";
     g = l.ler(s);
-    cout << "Detectar NT RE da gramática: " << endl << endl << g.print();
+    cout << "Detectar NT RE da gramática: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         if(nt->ehRE(g.Ne()))
@@ -166,7 +168,7 @@ int main(int argc, char *argv[])
         "B -> c\n"
         "A -> S B b | b";
     g = l.ler(s);
-    cout << "Detectar NT RE da gramática: " << endl << endl << g.print();
+    cout << "Detectar NT RE da gramática: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         if(nt->ehRE(g.Ne()))
@@ -180,7 +182,7 @@ int main(int argc, char *argv[])
         "B -> c\n"
         "A -> S B b | b";
     g = l.ler(s);
-    cout << "Calcular first da gramática: " << endl << endl << g.print();
+    cout << "Calcular first da gramática: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         cout << "NT: " << nt->nome() << endl;
@@ -203,7 +205,7 @@ int main(int argc, char *argv[])
         "B -> c\n"
         "A -> S A B b | b";
     g = l.ler(s);
-    cout << "Calcular first da gramática: " << endl << endl << g.print();
+    cout << "Calcular first da gramática: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         cout << "NT: " << nt->nome() << endl;
@@ -224,7 +226,7 @@ int main(int argc, char *argv[])
         "B -> c\n"
         "A -> S A B b | b";
     g = l.ler(s);
-    cout << "Calcular first da gramática: " << endl << endl << g.print();
+    cout << "Calcular first da gramática: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         cout << "NT: " << nt->nome() << endl;
@@ -250,7 +252,7 @@ int main(int argc, char *argv[])
         "C1 -> com C1 | &\n"
         "C2 -> K V ; C e C1 | C e C1";
     g = l.ler(s);
-    cout << "Calcular first da gramática __7a__: " << endl << endl << g.print();
+    cout << "Calcular first da gramática __7a__: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         cout << "NT: " << nt->nome() << endl;
@@ -276,7 +278,7 @@ int main(int argc, char *argv[])
         "B -> c\n"
         "A -> S A B b | b";
     g = l.ler(s);
-    cout << "Calcular follow da gramática: " << endl << endl << g.print();
+    cout << "Calcular follow da gramática: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         cout << "NT: " << nt->nome() << endl;
@@ -302,7 +304,7 @@ int main(int argc, char *argv[])
         "C -> c C | &\n"
         "D -> d D | &\n";
     g = l.ler(s);
-    cout << "Calcular follow da gramática: " << endl << endl << g.print();
+    cout << "Calcular follow da gramática: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         cout << "NT: " << nt->nome() << endl;
@@ -333,7 +335,7 @@ int main(int argc, char *argv[])
         "C1 -> com C1 | &\n"
         "C2 -> K V ; C e C1 | C e C1";
     g = l.ler(s);
-    cout << "Calcular follow da gramática __7a__: " << endl << endl << g.print();
+    cout << "Calcular follow da gramática __7a__: " << endl << endl << g.printaGramatica();
     for(auto it = g.nTerminais()->begin(); it != g.nTerminais()->end(); it++){
         NTerminal * nt = *it;
         cout << "NT: " << nt->nome() << endl;
@@ -366,11 +368,76 @@ int main(int argc, char *argv[])
         "C2 -> K V ; C e C1 | C e C1";
     g = l.ler(s);
     cout << "Calcular tabela de parse da gramática __7a__: " << endl << endl;
-    cout << g.print();
-    g.tabelaParse();
+    cout << g.printaGramatica();
+    g.construirTabelaParse();
     string tabela = g.printarTP();
 
     cout << endl;
     cout << tabela;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "P -> B P1\n"
+        "P1 -> ; B P1 | &\n"
+        "B -> K V C\n"
+        "K -> c K | &\n"
+        "V -> v V | &\n"
+        "C -> b C2 | C1\n"
+        "C1 -> com C1 | &\n"
+        "C2 -> K V ; C e C1 | C e C1";
+    g = l.ler(s);
+    cout << "Verificar se está fatorada __7a__: " << endl << endl;
+    cout << g.printaGramatica();
+//    cout << g.testaFatorada() << endl;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "E -> E + T | E - T | T\n"
+            "T -> T * F | T / F | F\n"
+            "F -> ( E ) | id";
+
+    g = l.ler(s);
+    cout << "Verificar se possui RE __7a__: " << endl << endl;
+    cout << g.printaGramatica();
+    cout << "Possui RE: " << g.testaRE() << endl;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "E -> T E1\n"
+        "E1 -> + T E1 | &\n"
+        "T -> F T1\n"
+        "T1 -> * F T1 | &\n"
+        "F -> ( E ) | id";
+
+    g = l.ler(s);
+    cout << "Verificar se possui RE __7a__: " << endl << endl;
+    cout << g.printaGramatica();
+    cout << "Possui RE: " << g.testaRE() << endl;
+    //------------------------------------------------------------------------------------------------------------------
+    s = "E -> T E1\n"
+        "E1 -> + T E1 | &\n"
+        "T -> F T1\n"
+        "T1 -> * F T1 | &\n"
+        "F -> ( E ) | id";
+
+    g = l.ler(s);
+    cout << "Teste de escrita: " << endl << endl;
+    l.gravar(g, "Expressoes.txt");
+    //------------------------------------------------------------------------------------------------------------------
+    s = "E -> T E1\n"
+        "E1 -> + T E1 | &\n"
+        "T -> F T1\n"
+        "T1 -> * F T1 | &\n"
+        "F -> ( E ) | id";
+
+    g = l.ler(s);
+    cout << "Teste de recuperação: " << endl << endl;
+    Gramatica g1 = l.recuperar("Expressoes.txt");
+    cout << g1.printaGramatica();
+    //------------------------------------------------------------------------------------------------------------------
+    s = "E -> T E1\n"
+        "E1 -> + T E1 | &\n"
+        "T -> F T1\n"
+        "T1 -> * F T1 | &\n"
+        "F -> ( E ) | id";
+
+    g = l.ler(s);
+    cout << "Teste análise de sentença: id+id" << endl << endl;
+    AnalisadorSintatico a;
+    cout << a.analisar("id + id", g) << endl;
 
 }
