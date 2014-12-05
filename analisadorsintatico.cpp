@@ -4,12 +4,14 @@ AnalisadorSintatico::AnalisadorSintatico()
 {
 }
 
-bool AnalisadorSintatico::analisar(string sentenca, Gramatica g){
-    g.construirTabelaParse();
+bool AnalisadorSintatico::analisar(string sentenca, Gramatica & g){
 
     Sentenca s = lerSentenca(sentenca,g);
 
-    unordered_map<NTerminal*,unordered_map<Terminal*,pair<FormaSentencial,int>>> & tabela = *g.tabelaParse();
+    if(s.front() == invalido)
+        return false;
+
+    unordered_map<NTerminal*,unordered_map<Terminal*,FormaSentencial*>> & tabela = *g.tabelaParse();
 
     stack<Simbolo*> pilha;
     pilha.push(g.inicial());
@@ -20,30 +22,30 @@ bool AnalisadorSintatico::analisar(string sentenca, Gramatica g){
 
     while (!pilha.empty()) {
         Simbolo * topoPilha = pilha.top();
-        pilha.pop();
 
         Terminal * atual = s.at(posSimboloAtual);
 
-        FormaSentencial fs = tabela[topoPilha][atual].first;
+        FormaSentencial * fs = tabela[topoPilha][atual];
 
         if(!topoPilha->ehNTerminal())
             if(topoPilha->nome().compare(atual->nome()) == 0){
-                pilha.pop();
                 posSimboloAtual++;
+                pilha.pop();
+                continue;
             }
         else
             return false;
 
-        if(fs.begin() != fs.end()){
-            for (int i = 0; i < fs.size(); ++i) {
-                Simbolo * s = fs.at(i);
-                pilha.push(s);
+        if(fs != NULL){
+            pilha.pop();
+            for (int i = fs->size()-1; i >= 0; i--) {
+                Simbolo * s = fs->at(i);
+
+                if(s->nome().compare(g.getEpsilon()->nome()) != 0)
+                    pilha.push(s);
             }
         }else
             return false;
-
-
-        posSimboloAtual++;
     }
     return true;
 }
@@ -60,7 +62,7 @@ Sentenca AnalisadorSintatico::lerSentenca(string s, Gramatica g){
         if(t != NULL){
             sentenca.push_back(t);
         }else
-            cout << "algum simbolo não pertence ao alfabeto!";
+            sentenca.push_back(invalido);
     }
     return sentenca;
 }

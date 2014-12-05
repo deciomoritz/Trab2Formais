@@ -7,6 +7,11 @@ LeitorGramatica::LeitorGramatica()
 Gramatica LeitorGramatica::ler(string s) {
 
     Gramatica g;
+
+    unordered_map<FormaSentencial*, int> FSparaInt;
+
+    int k = 1;
+
     vector<string>producoes = split(s, "\n");
 
     NTerminal * inicial = new NTerminal(split(producoes.front()," ").front());
@@ -15,6 +20,8 @@ Gramatica LeitorGramatica::ler(string s) {
 
     for (int i = 0; i < producoes.size(); ++i) {
         string producao = producoes.at(i);
+        if(producao.empty())
+            continue;
 
         vector<string> formaSentencial = split(producao, " ");
 
@@ -61,16 +68,20 @@ Gramatica LeitorGramatica::ler(string s) {
             }
 
             if(simbolo.compare(string("|")) == 0 || i == formaSentencial.size() - 1){
-                novoNT->addProducao(novaFS);
+                FormaSentencial * aux = novoNT->addProducao(novaFS);
+                FSparaInt.insert({aux,k++});
                 novaFS.clear();
                 continue;
             }
         }
     }
+    g.eliminarInuteis();
     g.calculaNe();
     g.follow();
     g.first();
     g.first_NT();
+    g.setFSParaInt(FSparaInt);
+    g.construirTabelaParse();
 
     return g;
 }
@@ -102,14 +113,18 @@ Gramatica LeitorGramatica::recuperar(string nomeArquivo){
 
     arquivo.open(nomeArquivo);
 
-    if(arquivo.is_open()){
-        while (getline(arquivo,linha)) {
-            linha.pop_back();
+    if(arquivo.is_open())
+        while (getline(arquivo,linha)){
             conteudo += linha + "\n";
         }
-    }
-    conteudo.pop_back();
+
     arquivo.close();
+
+    conteudo.pop_back();
+    conteudo.pop_back();
+
+    if (!conteudo.empty() && conteudo[conteudo.length()-1] == '\n')
+        conteudo.erase(conteudo.length()-1);
 
     return ler(conteudo);
 }

@@ -27,7 +27,7 @@ public:
     NTerminal();
     NTerminal(string nome);
 
-    void addProducao(FormaSentencial f);
+    FormaSentencial * addProducao(FormaSentencial f);
     set<FormaSentencial> * producoes();
     void set_follow(Simbolos *S);
     Simbolos* get_follow();

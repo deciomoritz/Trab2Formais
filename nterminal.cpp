@@ -11,8 +11,9 @@ NTerminal::NTerminal(string nome){
     _nome = nome;
 }
 
-void NTerminal::addProducao(FormaSentencial f){
+FormaSentencial * NTerminal::addProducao(FormaSentencial f){
     _producoes.insert(f);
+    return &*_producoes.find(f);
 }
 
 set<FormaSentencial> * NTerminal::producoes(){

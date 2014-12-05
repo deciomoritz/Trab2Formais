@@ -6,12 +6,14 @@ using std::stack;
 
 #include "leitorgramatica.h"
 
+const char invalido = 'î';
+
 class AnalisadorSintatico
 {
 public:
     AnalisadorSintatico();
 
-    static bool analisar(string sentenca, Gramatica g);
+    static bool analisar(string sentenca, Gramatica & g);
     static Sentenca lerSentenca(string s, Gramatica g);
 };
 
