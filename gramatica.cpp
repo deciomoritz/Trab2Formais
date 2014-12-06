@@ -104,30 +104,37 @@ void Gramatica::eliminarInferteis(){
 }
 
 void Gramatica::eliminarInuteis(){
-    this->eliminarInalcancaveis();
     this->eliminarInferteis();
+    this->eliminarInalcancaveis();    
 }
 
 void Gramatica::eliminarInalcancaveis(){
 
     set<NTerminal*> alcancaveis;
     alcancaveis.insert(_inicial);
-    for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
-        NTerminal * nt = *A;
 
-        for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
-            FormaSentencial fs = *B;
+    set<NTerminal*> novoAlcancaveis;
 
-            for (int i = 0; i < fs.size(); ++i){
-                Simbolo * s = fs.at(i);
-                if(s->ehNTerminal()){
-                    NTerminal * aux = s;
-                    if(!NTerminal::contem(alcancaveis, *aux))
+    do{
+        novoAlcancaveis = alcancaveis;
+        for(auto A = _NTerminais.begin(); A != _NTerminais.end();A++){
+            NTerminal * nt = *A;
+
+            if(alcancaveis.find(nt) == alcancaveis.end())
+                continue;
+
+            for(auto B = nt->producoes()->begin(); B != nt->producoes()->end();B++){
+                FormaSentencial fs = *B;
+
+                for (int i = 0; i < fs.size(); ++i){
+                    Simbolo * s = fs.at(i);
+                    if(s->ehNTerminal())
                         alcancaveis.insert(s);
                 }
             }
         }
-    }
+    }while(alcancaveis != novoAlcancaveis);
+
     _NTerminais.clear();
     _NTerminais.insert(alcancaveis.begin(),alcancaveis.end());
 }
