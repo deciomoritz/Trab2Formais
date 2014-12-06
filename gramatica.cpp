@@ -316,8 +316,6 @@ void Gramatica::construirTabelaParse(){
 
 string Gramatica::printarTP(){
 
-    cout << printaGramaticaNumerada();
-
     string tabela;
 
     tabela += "\t";
@@ -365,7 +363,7 @@ bool Gramatica::possuiRE(){
     return false;
 }
 
-bool Gramatica::testaFatorada(){
+bool Gramatica::estaFatorada(){
     for(auto it_NT = _NTerminais.begin(); it_NT!= _NTerminais.end(); it_NT++){
         NTerminal *nt = *it_NT;
         set<FormaSentencial> *prod = nt->producoes();
@@ -419,7 +417,7 @@ bool Gramatica::testaFirstFollow(){
 }
 
 bool Gramatica::testaLL1(){
-    return !possuiRE() && testaFatorada() && testaFirstFollow();
+    return !possuiRE() && estaFatorada() && testaFirstFollow();
 }
 
 bool Gramatica::interseccaoVazia(vector<Simbolos> conj){

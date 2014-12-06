@@ -179,7 +179,7 @@ public:
     /*! \brief Retorna true se a Gramatica está fatorada
      *
      */
-    bool testaFatorada();
+    bool estaFatorada();
 
     /*! \brief Retorna true se a condição 3 for satisfeita
      *

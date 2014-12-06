@@ -89,8 +89,14 @@ void MainWindow::ler(){
 
         ui->gramatica->setLineWrapMode(QTextEdit::NoWrap);
         ui->gramatica->setText(QString(g.printaGramaticaNumerada().c_str()));
-    }else
-        ui->tabelaParse->setText(QString("A gramática inserida não é LL(1), a tabela não será construída."));
+    }else{
+        if(g.possuiRE())
+            ui->tabelaParse->setText(QString("A gramática inserida não é LL(1), pois possui recursão à esquerda. A tabela não será construída."));
+        else if(!g.estaFatorada())
+            ui->tabelaParse->setText(QString("A gramática inserida não é LL(1), pois não está fatorada. A tabela não será construída."));
+        else
+            ui->tabelaParse->setText(QString("A gramática inserida não é LL(1), pois a terceira condição falha. A tabela não será construída."));
+    }
 }
 
 void MainWindow::salvar(){
@@ -124,7 +130,7 @@ void MainWindow::verificarRE(){
 void MainWindow::verificarFatorada(){
     QMessageBox messageBox;
 
-    if(g.testaFatorada())
+    if(g.estaFatorada())
         messageBox.critical(0,"","Está fatorada");
     else
         messageBox.critical(0,"","Não está fatorada");

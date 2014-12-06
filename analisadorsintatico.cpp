@@ -20,10 +20,11 @@ bool AnalisadorSintatico::analisar(string sentenca, Gramatica & g){
 
     int posSimboloAtual = 0;
 
+    Terminal * atual;
     while (!pilha.empty()) {
         Simbolo * topoPilha = pilha.top();
 
-        Terminal * atual = s.at(posSimboloAtual);
+        atual = s.at(posSimboloAtual);
 
         FormaSentencial * fs = tabela[topoPilha][atual];
 
@@ -32,22 +33,20 @@ bool AnalisadorSintatico::analisar(string sentenca, Gramatica & g){
                 posSimboloAtual++;
                 pilha.pop();
                 continue;
-            }
-        else
-            return false;
+            }else
+                return false;
 
         if(fs != NULL){
             pilha.pop();
             for (int i = fs->size()-1; i >= 0; i--) {
                 Simbolo * s = fs->at(i);
-
                 if(s->nome().compare(g.getEpsilon()->nome()) != 0)
                     pilha.push(s);
             }
         }else
             return false;
     }
-    return true;
+    return atual == g.getDollar();
 }
 
 Sentenca AnalisadorSintatico::lerSentenca(string s, Gramatica g){
